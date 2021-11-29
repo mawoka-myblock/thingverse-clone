@@ -1,6 +1,4 @@
-from pydantic import BaseModel
-
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel
 
@@ -32,3 +30,24 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: Optional[str] = None
+
+
+class BaseFile(BaseModel):
+    creation_date: str
+    user_id: str
+    hashsum: str
+    file_id: str
+    reported: bool = False
+
+
+class BaseInputThing(BaseModel):
+    description: str
+    title: str
+    file: str
+    pictures: List[str]
+
+
+class BaseThing(BaseInputThing):
+    creation_date: str
+    id: str
+    user_id: str
