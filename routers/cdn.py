@@ -17,6 +17,12 @@ import zipfile
 router = APIRouter()
 
 
+async def download_counter(thing: str, inc: bool = True):
+    if inc:
+        col("things").update_one({"id": thing}, {"$inc": {"downloads": 1}})
+    else:
+        col("things").update_one({"id": thing}, {"$inc": {"downloads": -1}})
+
 @router.post("/upload")
 async def upload(files: List[UploadFile] = File(...),
                  current_user: UserInDB = Depends(get_current_user)):
@@ -46,7 +52,7 @@ async def upload(files: List[UploadFile] = File(...),
             length=len(buff.getvalue()),
             object_name=f"{current_user.username}/{object_id}.zip",
         )
-        file_data = BaseFile(creation_date=str(datetime.now().replace(microsecond=0)), hashsum=zip_hash,
+        file_data = BaseFile(creation_date=str(datetime.now().replace(microsecond=0)), hash=zip_hash,
                              file_id=object_id, user_id=current_user.id)
 
         await col("files").insert_one(file_data.dict())
@@ -57,14 +63,16 @@ async def upload(files: List[UploadFile] = File(...),
 
 
 @router.get("/download/{user}/{object_id}", response_class=StreamingResponse)
-async def download(user: str, object_id: str):
+async def download(user: str, object_id: str, background_tasks: BackgroundTasks):
     bucket = settings.minio_bucket
     try:
+        background_tasks.add_task(download_counter, thing=object_id, inc=True)
         return StreamingResponse(
             minio.get_object(bucket_name=bucket, object_name=f"{user}/{object_id}.zip"),
             media_type="application/zip",
         )
     except Minio.error.S3Error as e:
+        background_tasks.add_task(download_counter, thing=object_id, inc=False)
         if "NoSuchKey" in str(e):
             return JSONResponse(status_code=404, content={"details": "File not found"})
         else:
