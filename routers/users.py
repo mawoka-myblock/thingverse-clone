@@ -14,10 +14,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 router = APIRouter()
 
 
-@router.post("/create")
+@router.post("/create", response_model=PublicUser)
 async def create_user(user: BaseUserCreate, background_task: BackgroundTasks) -> Union[PublicUser, JSONResponse]:
     user_in_db = await get_user_from_mail(user.email)
-    if user_in_db:
+    if user_in_db is not None:
         raise HTTPException(status_code=400, detail="User already registered")
     user.password = get_password_hash(user.password)
     if len(user.username) == 32:
@@ -44,12 +44,12 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/users/me/")
+@router.get("/users/me/", response_model=PrivateUser)
 async def read_users_me(current_user: BaseUserCreate = Depends(get_current_user)):
-    return current_user.dict(exclude={"password"})
+    return PrivateUser(**current_user.dict())
 
 
-@router.get("/user:{user_id}")
+@router.get("/user/{user_id}", response_model=PublicUser)
 async def get_user_account(user_id: str) -> PublicUser:
     if len(user_id) == 32:
         user = await get_user_from_id(user_id)
