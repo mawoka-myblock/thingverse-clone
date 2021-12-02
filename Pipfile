@@ -15,6 +15,7 @@ python-jose = {extras = ["cryptography"], version = "*"}
 pydantic = "*"
 python-rapidjson = "*"
 minio = "*"
+hypercorn = {extras = ["trio"], version = "*"}
 
 [dev-packages]
 
