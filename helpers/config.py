@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     redis: RedisDsn = "redis://localhost:6379/0"
     skip_email_verification: bool = False
     mongo_url: str
-    mongo_db: str = "thingiverse"
+    mongo_db: str = "thingverse"
     mail_address: str
     mail_password: str
     mail_username: str

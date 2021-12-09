@@ -1,7 +1,8 @@
-# Thingiverse-Clone
+# Thingverse-Clone
 
 
-
+To-Do's are on the Vikunja-Board below:
+https://tasks.mawoka.eu.org/share/vorLlamODyqrtoBcxydxMNEjslRQzarIjnPjqHjU/auth
 ## Setup
 ### Requirements
 - Redis
