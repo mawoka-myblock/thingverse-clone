@@ -105,7 +105,7 @@ class CreateCollection(BaseModel):
 
 class PublicCollection(CreateCollection):
     username: str
-    things: List[str] = []
+    things: List[PyObjectId] = []
     id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
     creation_date: str
 
