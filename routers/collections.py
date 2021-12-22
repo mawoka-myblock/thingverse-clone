@@ -19,3 +19,12 @@ async def create_col(data: CreateCollection, background_tasks: BackgroundTasks,
     db_data = PublicCollection(**dat)
 
     await col("collections").insert_one(db_data.dict(by_alias=True))
+
+
+@router.get("/my")
+async def get_my_cols(current_user: UserInDB = Depends(get_current_user)):
+
+    return_obs = []
+    for doc in await col("collections").find({"username": current_user.username}).to_list(length=None):
+        return_obs.append(PublicCollection(**doc))
+    return return_obs
