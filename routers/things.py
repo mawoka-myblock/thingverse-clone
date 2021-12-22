@@ -41,14 +41,14 @@ async def create_thing(background_tasks: BackgroundTasks, data: BaseInputThing,
     thing_dict.update(
         {"creation_date": creation_date, "user_id": current_user.id, "hash": thing_hash})
     thing = BaseThing(**thing_dict)
-    await col("things").insert_one(thing.dict())
+    await col("things").insert_one(thing.dict(by_alias=True))
 
     return PublicThing(**thing.dict())
 
 
 @router.get("/thing/{thing_id}", response_model=PublicThing)
 async def get_thing(thing_id: str):
-    thing = await col("things").find_one({"_id": thing_id})
+    thing = await col("things").find_one({"_id": ObjectId(thing_id)})
     if thing is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Thing does not exist")
     return PublicThing(**thing)
@@ -58,13 +58,16 @@ async def get_thing(thing_id: str):
 async def like_thing(thing_id: str, background_tasks: BackgroundTasks,
                      current_user: UserInDB = Depends(get_current_user), ):
     async def bg_task():
-        await col("likes").update_one({"thing_id": thing_id},
+        await col("likes").update_one({"_id": ObjectId(thing_id)},
                                       {"$addToSet": {"ids": current_user.id}}, upsert=True)
-        await col("likes").update_one({"thing_id": thing_id}, {"$addToSet": {"usernames": current_user.username}},
+        await col("likes").update_one({"_id": ObjectId(thing_id)}, {"$addToSet": {"usernames": current_user.username}},
                                       upsert=True)
+        await col("things").update_one({"_id": ObjectId(thing_id)}, {"$inc": {"like_count": 1}})
 
-    thing = await col("things").find_one({"_id": thing_id})
+    thing = await col("things").find_one({"_id": ObjectId(thing_id)})
     if thing is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Thing does not exist")
+    elif await col("likes").find_one({"usernames": {"$regex": str(current_user.username)}, "_id": ObjectId(thing_id)}) is not None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You already liked this thing")
     background_tasks.add_task(bg_task)
 
