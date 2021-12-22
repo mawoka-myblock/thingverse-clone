@@ -97,3 +97,15 @@ class PublicThing(BaseInputThing):
 
 class BaseThing(PublicThing):
     hash: str
+
+
+class CreateCollection(BaseModel):
+    name: str
+
+
+class PublicCollection(CreateCollection):
+    username: str
+    things: List[str] = []
+    id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
+    creation_date: str
+
