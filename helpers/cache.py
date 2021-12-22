@@ -1,3 +1,5 @@
+from bson import ObjectId
+
 from helpers.config import redis, col
 from rapidjson import loads
 from typing import Union
@@ -10,24 +12,21 @@ async def cache_account(criteria: str, content: str) -> Union[UserInDB, None]:
         await redis().set(key, usermodel.json(), ex=settings.cache_expiry)
 
     if criteria == "email":
-        res = await col("users").find_one({"email": content, "verified": True},
-                                          {"_id": 0})
+        res = await col("users").find_one({"email": content, "verified": True})
         if res is None:
             return None
         user = UserInDB.parse_obj(res)
         await insert_into_redis(user, content)
         return user
     elif criteria == "username":
-        res = await col("users").find_one({"username": content, "verified": True},
-                                          {"_id": 0})
+        res = await col("users").find_one({"username": content, "verified": True})
         if res is None:
             return None
         user = UserInDB.parse_obj(res)
         await insert_into_redis(user, content)
         return user
     elif criteria == "id":
-        res = await col("users").find_one({"id": content, "verified": True},
-                                          {"_id": 0})
+        res = await col("users").find_one({"_id": ObjectId(content), "verified": True})
         if res is None:
             return None
         user = UserInDB.parse_obj(res)

@@ -22,10 +22,11 @@ async def create_user(user: BaseUserCreate, background_task: BackgroundTasks) ->
     user.password = get_password_hash(user.password)
     if len(user.username) == 32:
         return JSONResponse({"details": "Username mustn't be 32 characters long"}, 400)
-    userindb = UserInDB(**user.dict(), id=uuid.uuid4().hex, is_superuser=False, date_joined=str(datetime.now()))
-    await col("users").insert_one(userindb.dict())
+    userindb = UserInDB(**user.dict(), is_superuser=False, date_joined=str(datetime.now()))
+    _id = await col("users").insert_one(userindb.dict())
     background_task.add_task(send_mail, email=user.email)
-    return PublicUser(**userindb.dict())
+    user_dict = userindb.dict(by_alias=True)
+    return PublicUser(**user_dict)
 
 
 @router.post("/token", response_model=Token)
@@ -51,7 +52,7 @@ async def read_users_me(current_user: BaseUserCreate = Depends(get_current_user)
 
 @router.get("/user/{user_id}", response_model=PublicUser)
 async def get_user_account(user_id: str) -> PublicUser:
-    if len(user_id) == 32:
+    if len(user_id) == 24:
         user = await get_user_from_id(user_id)
     else:
         user = await get_user_from_username(user_id)

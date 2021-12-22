@@ -19,9 +19,10 @@ router = APIRouter()
 
 async def download_counter(thing: str, inc: bool = True):
     if inc:
-        col("things").update_one({"id": thing}, {"$inc": {"downloads": 1}})
+        col("things").update_one({"_id": thing}, {"$inc": {"downloads": 1}})
     else:
-        col("things").update_one({"id": thing}, {"$inc": {"downloads": -1}})
+        col("things").update_one({"_id": thing}, {"$inc": {"downloads": -1}})
+
 
 @router.post("/upload")
 async def upload(files: List[UploadFile] = File(...),
@@ -29,37 +30,32 @@ async def upload(files: List[UploadFile] = File(...),
     buff = io.BytesIO()
     files_ok = True
     file_hashes = []
+    zip_archive = zipfile.ZipFile(buff, mode='x')
     for file in files:
-        file_hashes.append(hashlib.md5(await file.read()).hexdigest())
+        file_content = await file.read()
+        file_hashes.append(hashlib.md5(file_content).hexdigest())
+        zip_archive.writestr(file.filename, file_content)
         if not str(file.filename).lower().endswith(".stl"):
-            files_ok = False
-    files_ok = True
-    if files_ok:
-        zip_archive = zipfile.ZipFile(buff, mode='x', strict_timestamps=False)
-        for file in files:
-            file_content = await file.read()
-            zip_archive.writestr(file.filename, file_content)
-        zip_archive.close()
-        bucket = settings.minio_bucket
+            return JSONResponse({"details": "No stl-files provided"}, 400)
+    zip_archive.close()
 
-        object_id = os.urandom(16).hex()
-        zip_hash = hashlib.md5(str(file_hashes.sort()).encode("utf-8")).hexdigest()
-        if await col("files").find_one({"hashsum": zip_hash}) is not None:
-            return JSONResponse(status_code=409, content={"details": "File already exists"})
-        minio.put_object(
-            bucket_name=bucket,
-            data=io.BytesIO(buff.getvalue()),
-            length=len(buff.getvalue()),
-            object_name=f"{current_user.username}/{object_id}.zip",
-        )
-        file_data = BaseFile(creation_date=str(datetime.now().replace(microsecond=0)), hash=zip_hash,
-                             file_id=object_id, user_id=current_user.id)
+    bucket = settings.minio_bucket
 
-        await col("files").insert_one(file_data.dict())
+    zip_hash = hashlib.md5(str(file_hashes.sort()).encode("utf-8")).hexdigest()
+    if await col("files").find_one({"hash": zip_hash}) is not None:
+        return JSONResponse(status_code=409, content={"details": "File already exists"})
 
-        return {"id": object_id}
-    else:
-        return JSONResponse({"details": "No stl-files provided"}, 400)
+    file_data = BaseFile(creation_date=str(datetime.now().replace(microsecond=0)), hash=zip_hash,
+                         user_id=current_user.id)
+
+    await col("files").insert_one(file_data.dict(by_alias=True))
+    minio.put_object(
+        bucket_name=bucket,
+        data=io.BytesIO(buff.getvalue()),
+        length=len(buff.getvalue()),
+        object_name=f"{current_user.username}/{str(file_data.id)}.zip",
+    )
+    return {"id": str(file_data.id)}
 
 
 @router.get("/download/{user}/{object_id}", response_class=StreamingResponse)

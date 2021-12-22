@@ -36,6 +36,11 @@ class Settings(BaseSettings):
     minio_secure: bool = True
     access_token_expire_minutes: int = 30
     cache_expiry: int = 86400
+    typesense_api_key: str
+    typesense_host: str = "localhost"
+    typesense_port: int = 8108
+    typesense_protocol: str = "http"
+    typesense_timeout: int = 2
 
     class Config:
         env_file = ".env"

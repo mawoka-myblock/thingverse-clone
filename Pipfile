@@ -16,6 +16,9 @@ pydantic = "*"
 python-rapidjson = "*"
 minio = "*"
 hypercorn = {extras = ["trio"], version = "*"}
+fuzzy = "*"
+celery = {extras = ["redis"], version = "*"}
+typesense = "*"
 
 [dev-packages]
 
