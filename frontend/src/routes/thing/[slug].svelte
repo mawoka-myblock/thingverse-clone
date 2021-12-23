@@ -18,23 +18,26 @@
 <script>
 	export let thing;
 	export let user;
+    import {Dialog, Transition} from "@rgossiaux/svelte-headlessui"
 	import Navbar from '$lib/navbar.svelte';
-    import {DateTime} from "luxon"
+	import { DateTime } from 'luxon';
 	import 'swiper/css';
 	import { Swiper, SwiperSlide } from 'swiper/svelte';
-    const prettyfyDate = (date) => {
-        const dt = DateTime.fromISO(date)
-        let minute
-        if (dt.minute <= 9) {
-            minute = `0${dt.minute}`
-        } else {
-            minute = dt.minute
-        }
-        return `${dt.day}.${dt.month}.${dt.year} at ${dt.hour}:${minute}`
-        //const time = date.substring(11)
-        //const datum = date.substring(0, 10)
-        // return `${datum} um ${time}`
-    }
+    import tippy from "sveltejs-tippy";
+	const prettyfyDate = (date) => {
+		const dt = DateTime.fromISO(date);
+		let minute;
+		if (dt.minute <= 9) {
+			minute = `0${dt.minute}`;
+		} else {
+			minute = dt.minute;
+		}
+		return `${dt.day}.${dt.month}.${dt.year} at ${dt.hour}:${minute}`;
+		//const time = date.substring(11)
+		//const datum = date.substring(0, 10)
+		// return `${datum} um ${time}`
+	};
+    let donwloadModalOpen = false
 </script>
 
 <Navbar />
@@ -45,29 +48,34 @@
 			By: <a class="text-center underline" href={`/user/${thing.user_id}`}>{user.username}</a>
 		</p>
 	</section>
-    <section>
-        <div class="grid lg:grid-cols-4 pt-8 lg:px-16 grid-cols-2">
-            <div class="col-span-2 row-span-3">
-                <Swiper spaceBetween={50} slidesPerView={1}>
-                    {#each thing.pictures as pic_url}
-                        <SwiperSlide>
-                            <img src={pic_url} loading="lazy" alt="Model" />
-                        </SwiperSlide>
-                    {/each}
-                </Swiper>
-            </div>
-            <div class="pl-4">
-                <div class="grid grid-cols-1 divide-y leading-6 rounded-lg shadow-lg overflow-hidden">
-                    <p class="p-2">Likes: {thing.like_count}</p>
-                    <p class="p-2">Comments: {thing.comment_count}</p>
-                    <p class="p-2">Makes: {thing.make_count}</p>
-                    <p class="p-2">Remixes: {thing.remixes}</p>
-                    <p class="p-2">Downloads: {thing.downloads}</p>
-                    <p class="p-2">Created at: {prettyfyDate(thing.creation_date)}</p>
-                </div>
-            </div>
-            
-        </div>
-    </section>
+	<section>
+		<div class="grid lg:grid-cols-4 pt-8 lg:px-16 grid-cols-2">
+			<div class="col-span-2 row-span-3">
+				<Swiper spaceBetween={50} slidesPerView={1}>
+					{#each thing.pictures as pic_url}
+						<SwiperSlide>
+							<img src={pic_url} loading="lazy" alt="Model" />
+						</SwiperSlide>
+					{/each}
+				</Swiper>
+			</div>
+			<div class="pl-4">
+				<div class="grid grid-cols-1 divide-y leading-6 rounded-lg shadow-lg overflow-hidden">
+					<p class="p-2">Likes: {thing.like_count}</p>
+					<p class="p-2">Comments: {thing.comment_count}</p>
+					<p class="p-2">Makes: {thing.make_count}</p>
+					<p class="p-2">Remixes: {thing.remixes}</p>
+					<p class="p-2">Downloads: {thing.downloads}</p>
+					<p class="p-2" use:tippy={{content: "DD.MM.YYYY at HH:MM"}}>Created on: {prettyfyDate(thing.creation_date)}</p>
+				</div>
+			</div>
+			<div>
+				<div class="grid grid-cols-1 pl-4">
+					<a class="btn" href={`${apiurl}/api/v1/cdn/download/${user.username}/${thing.file}`}
+						>Download</a
+					>
+				</div>
+			</div>
+		</div>
+	</section>
 </div>
-
