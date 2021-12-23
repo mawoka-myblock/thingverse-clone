@@ -5,9 +5,11 @@ specifiers:
   '@sveltejs/kit': next
   autoprefixer: ^10.4.0
   cssnano: ^5.0.14
+  daisyui: ^1.19.0
   eslint: ^7.32.0
   eslint-config-prettier: ^8.3.0
   eslint-plugin-svelte3: ^3.2.1
+  luxon: ^2.2.0
   postcss: ^8.4.5
   postcss-scss: ^4.0.2
   prettier: ^2.4.1
@@ -20,9 +22,11 @@ devDependencies:
   '@sveltejs/kit': 1.0.0-next.202_svelte@3.44.3
   autoprefixer: 10.4.0_postcss@8.4.5
   cssnano: 5.0.14_postcss@8.4.5
+  daisyui: 1.19.0
   eslint: 7.32.0
   eslint-config-prettier: 8.3.0_eslint@7.32.0
   eslint-plugin-svelte3: 3.2.1_eslint@7.32.0+svelte@3.44.3
+  luxon: 2.2.0
   postcss: 8.4.5
   postcss-scss: 4.0.2_postcss@8.4.5
   prettier: 2.5.1
@@ -564,6 +568,10 @@ packages:
     engines: {node: '>=8.0.0'}
     dependencies:
       css-tree: 1.1.3
+    dev: true
+
+  /daisyui/1.19.0:
+    resolution: {integrity: sha512-SaKe2acN734KVtrrCvxXFnrl1BOQzXqQybHbUZnXz3kK5h903mK/kKHWx+423Y03+DikWJbuGYWgcYHTQk3dwQ==}
     dev: true
 
   /debug/4.3.3:
@@ -1265,6 +1273,11 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       yallist: 4.0.0
+    dev: true
+
+  /luxon/2.2.0:
+    resolution: {integrity: sha512-LwmknessH4jVIseCsizUgveIHwlLv/RQZWC2uDSMfGJs7w8faPUi2JFxfyfMcTPrpNbChTem3Uz6IKRtn+LcIA==}
+    engines: {node: '>=12'}
     dev: true
 
   /magic-string/0.25.7:

@@ -7,6 +7,7 @@ import os
 import re
 import io
 
+import bson.errors
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, UploadFile, File
 from fastapi.responses import RedirectResponse, PlainTextResponse, JSONResponse
 from helpers.config import settings, col, minio
@@ -34,7 +35,7 @@ async def create_thing(background_tasks: BackgroundTasks, data: BaseInputThing,
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Thing already exists")
 
     # --- END checking for duplication, etc.
-    creation_date = str(datetime.now().replace(microsecond=0))
+    creation_date = str(datetime.now().replace(microsecond=0).isoformat())
     thing_dict = {}
     thing_dict.update(data.dict())
 
@@ -48,7 +49,10 @@ async def create_thing(background_tasks: BackgroundTasks, data: BaseInputThing,
 
 @router.get("/thing/{thing_id}", response_model=PublicThing)
 async def get_thing(thing_id: str):
-    thing = await col("things").find_one({"_id": ObjectId(thing_id)})
+    try:
+        thing = await col("things").find_one({"_id": ObjectId(thing_id)})
+    except bson.errors.InvalidId:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid ID")
     if thing is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Thing does not exist")
     return PublicThing(**thing)

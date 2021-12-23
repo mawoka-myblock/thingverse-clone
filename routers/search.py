@@ -40,6 +40,9 @@ for word in terms:
 @router.get("/things")
 async def thing_search(query: str, limit: Optional[int] = 10, category: Optional[str] = "*",
                        page: Optional[int] = 1, query_by: str = "title"):
+
+    if query == "":
+        return {"found": 0}
     client = typesense.Client({
         'api_key': settings.typesense_api_key,
         "nodes": [{
