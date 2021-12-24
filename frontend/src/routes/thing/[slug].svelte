@@ -18,7 +18,8 @@
 <script>
 	export let thing;
 	export let user;
-    import {Dialog, Transition} from "@rgossiaux/svelte-headlessui"
+	import { marked } from 'marked';
+	import sanitizeHtml from 'sanitize-html';
 	import Navbar from '$lib/navbar.svelte';
 	import { DateTime } from 'luxon';
 	import 'swiper/css';
@@ -37,7 +38,6 @@
 		//const datum = date.substring(0, 10)
 		// return `${datum} um ${time}`
 	};
-    let donwloadModalOpen = false
 </script>
 
 <Navbar />
@@ -75,6 +75,9 @@
 						>Download</a
 					>
 				</div>
+			</div>
+			<div class="ml-4 rounded-lg shadow-lg overflow-hidden w-full h-full col-span-2 row-span-2 mt-8">
+				<article class="prose w-full h-full ml-4">{@html sanitizeHtml(marked(thing.description))}</article>
 			</div>
 		</div>
 	</section>
