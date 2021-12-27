@@ -59,23 +59,23 @@ async def login_for_cookie_access_token(response: Response, form_data: OAuth2Pas
     )
     response.set_cookie(key="access_token", value=f"Bearer {access_token}",
                         httponly=True, samesite='strict')
-    response.set_cookie(key="expiry", value="", max_age=3600)
+    response.set_cookie(key="expiry", value="", max_age=settings.access_token_expire_minutes*60)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/users/logout")
+@router.get("/logout")
 async def logout(response: Response):
     response.delete_cookie("access_token")
     response.delete_cookie("expiry")
     return {"message": "Logged out"}
 
 
-@router.get("/users/me/", response_model=PrivateUser)
+@router.get("/me/", response_model=PrivateUser)
 async def read_users_me(current_user: BaseUserCreate = Depends(get_current_user)):
     return PrivateUser(**current_user.dict())
 
 
-@router.get("/users/test-token")
+@router.get("/test-token")
 async def test_token(token: str = Depends(check_token)):
     return {"email": token}
 
@@ -91,7 +91,7 @@ async def get_user_account(user_id: str) -> PublicUser:
     return PublicUser(**user.dict())
 
 
-@router.get("/users/verify/{key}")
+@router.get("/users/{key}")
 async def get_verify_code(key: str):
     res = await col("users").find_one_and_update({"verified": key}, {"$set": {"verified": True}})
     if res is not None:

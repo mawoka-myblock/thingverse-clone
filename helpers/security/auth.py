@@ -52,7 +52,7 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
         return param
 
 
-oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/api/v1/users/token")
+oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/api/v1/users/token/cookie")
 
 
 def verify_password(plain_password, hashed_password):
