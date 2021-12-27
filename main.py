@@ -6,13 +6,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(redoc_url="")
 
-app.add_middleware(
+"""app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-)
+)"""
 
 app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
 app.include_router(cdn.router, prefix="/api/v1/cdn", tags=["cdn"])
