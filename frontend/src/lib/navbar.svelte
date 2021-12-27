@@ -91,7 +91,7 @@
 		<li class="py-2 lg:hidden block">
 			<a
 				class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 link-hover"
-				href="/account/settings">Your account</a
+				href="/account/overview">Your account</a
 			>
 		</li>
 		{:else}
@@ -107,7 +107,7 @@
 	<div class="py-2 justify-self-end hidden lg:block">
 		<a
 			class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 invisible lg:visible whitespace-nowrap"
-			href="/account/settings">Your account</a
+			href="/account/overview">Your account</a
 		>
 	</div>
 	{:else}
