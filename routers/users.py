@@ -45,9 +45,21 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
+@router.get("/users/logout")
+async def logout(response: Response):
+    response.delete_cookie("access_token")
+    response.delete_cookie("expiry")
+    return {"message": "Logged out"}
+
+
 @router.get("/users/me/", response_model=PrivateUser)
 async def read_users_me(current_user: BaseUserCreate = Depends(get_current_user)):
     return PrivateUser(**current_user.dict())
+
+
+@router.get("/users/test-token")
+async def test_token(token: str = Depends(check_token)):
+    return {"email": token}
 
 
 @router.get("/user/{user_id}", response_model=PublicUser)
