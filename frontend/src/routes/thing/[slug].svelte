@@ -25,6 +25,8 @@
 	import 'swiper/css';
 	import { Swiper, SwiperSlide } from 'swiper/svelte';
     import tippy from "sveltejs-tippy";
+	import {loggedin} from "$lib/stores"
+	console.log($loggedin)
 	const prettyfyDate = (date) => {
 		const dt = DateTime.fromISO(date);
 		let minute;
