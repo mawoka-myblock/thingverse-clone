@@ -1,8 +1,12 @@
 <script>
-    export let loggedin = false
-    let openMenu = true;
+	export let loggedin = false;
+	let openMenu = true;
 	let closeMenu = false;
 	let menuItems = false;
+	import { onMount } from 'svelte';
+	let url = ``;
+
+	onMount(() => (url = window.location.href));
 	const toggleMenu = () => {
 		console.log(openMenu, closeMenu, menuItems);
 		openMenu = !openMenu;
@@ -17,7 +21,9 @@
 	<!-- Our logo and button -->
 	<section class="w-full lg:w-max flex justify-between">
 		<!-- Logo -->
-		<a href="/" class="font-black tracking-tight text-xl text-black marck-script link-hover">Thingverse</a>
+		<a href="/" class="font-black tracking-tight text-xl text-black marck-script link-hover"
+			>Thingverse</a
+		>
 
 		<!-- Our open/close buttons -->
 		<!-- Open menu -->
@@ -62,30 +68,34 @@
 	<!-- Our list of items -->
 	<ul id="menu-items" class="lg:flex w-full flex-col lg:flex-row lg:pl-6" class:hidden={!menuItems}>
 		<li class="py-2">
-			<a class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 link-hover" href="/explore"
-				>Explore</a
+			<a
+				class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 link-hover"
+				href="/explore">Explore</a
 			>
 		</li>
 		<li class="py-2">
-			<a class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 link-hover" href="/contact"
-				>Contact</a
+			<a
+				class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 link-hover"
+				href="/contact">Contact</a
 			>
 		</li>
 		<li class="py-2">
-			<a class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 link-hover" href="/things-i-do"
-				>Stuff I do</a
+			<a
+				class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 link-hover"
+				href="/things-i-do">Stuff I do</a
 			>
 		</li>
 		<li class="py-2 lg:hidden block">
-			<a class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 link-hover" href="/login"
-				>Login</a
+			<a
+				class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 link-hover"
+				href="/account/login?ref={url}">Login</a
 			>
 		</li>
-        
 	</ul>
-    <div class="py-2 justify-self-end hidden lg:block">
-        <a class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 invisible lg:visible" href="/login"
-            >Login</a
-        >
-    </div>
+	<div class="py-2 justify-self-end hidden lg:block">
+		<a
+			class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 invisible lg:visible"
+			href="/account/login?ref={url}">Login</a
+		>
+	</div>
 </nav>

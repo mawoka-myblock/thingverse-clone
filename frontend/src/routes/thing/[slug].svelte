@@ -49,8 +49,8 @@
 		</p>
 	</section>
 	<section>
-		<div class="grid lg:grid-cols-4 pt-8 lg:px-16 grid-cols-2">
-			<div class="col-span-2 row-span-3">
+		<div class="grid lg:grid-cols-4 pt-8 lg:px-16 grid-cols-2 ">
+			<div class="col-span-2 row-span-3 border-slate-200 border-2 rounded-lg">
 				<Swiper spaceBetween={50} slidesPerView={1}>
 					{#each thing.pictures as pic_url}
 						<SwiperSlide>
@@ -60,7 +60,7 @@
 				</Swiper>
 			</div>
 			<div class="pl-4">
-				<div class="grid grid-cols-1 divide-y leading-6 rounded-lg shadow-lg overflow-hidden">
+				<div class="grid grid-cols-1 divide-y leading-6 rounded-lg shadow-lg overflow-hidden border-slate-200 border-2">
 					<p class="p-2">Likes: {thing.like_count}</p>
 					<p class="p-2">Comments: {thing.comment_count}</p>
 					<p class="p-2">Makes: {thing.make_count}</p>
@@ -76,7 +76,7 @@
 					>
 				</div>
 			</div>
-			<div class="ml-4 rounded-lg shadow-lg overflow-hidden w-full h-full col-span-2 row-span-2 mt-8">
+			<div class="ml-4 rounded-lg shadow-lg overflow-hidden w-full h-full col-span-2 row-span-2 mt-8 border-slate-200 border-2">
 				<article class="prose w-full h-full ml-4">{@html sanitizeHtml(marked(thing.description))}</article>
 			</div>
 		</div>
