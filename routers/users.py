@@ -2,13 +2,13 @@ import uuid
 from typing import Union
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Response
 from fastapi.responses import RedirectResponse, PlainTextResponse, JSONResponse
 from helpers.config import settings, col
 from helpers.models import *
 from helpers.security.verify import send_mail
 from helpers.security.auth import get_current_user, get_password_hash, get_user_from_id, verify_password, \
-    create_access_token, get_user_from_mail, get_user_from_username, authenticate_user
+    create_access_token, get_user_from_mail, get_user_from_username, authenticate_user, check_token
 from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter()
@@ -29,7 +29,7 @@ async def create_user(user: BaseUserCreate, background_task: BackgroundTasks) ->
     return PublicUser(**user_dict)
 
 
-@router.post("/token", response_model=Token)
+"""@router.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = await authenticate_user(form_data.username, form_data.password)
     if not user:
@@ -42,6 +42,24 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     access_token = create_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
     )
+    return {"access_token": access_token, "token_type": "bearer"}"""
+
+
+@router.post("/token/cookie", response_model=Token)
+async def login_for_cookie_access_token(response: Response, form_data: OAuth2PasswordRequestForm = Depends()):
+    user = await authenticate_user(form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+        )
+    access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
+    access_token = create_access_token(
+        data={"sub": user.email}, expires_delta=access_token_expires
+    )
+    response.set_cookie(key="access_token", value=f"Bearer {access_token}",
+                        httponly=True, samesite='strict')
+    response.set_cookie(key="expiry", value="", max_age=3600)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
