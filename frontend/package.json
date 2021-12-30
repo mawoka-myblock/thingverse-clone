@@ -20,6 +20,8 @@
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-svelte3": "^3.2.1",
+    "filedrop-svelte": "^0.1.1",
+    "filesize": "^8.0.6",
     "js-cookie": "^3.0.1",
     "luxon": "^2.2.0",
     "marked": "^4.0.8",
@@ -31,7 +33,9 @@
     "svelte": "^3.44.0",
     "svelte-loading-spinners": "^0.1.7",
     "sveltejs-tippy": "^3.0.0",
-    "tailwindcss": "^3.0.7"
+    "swiper": "^7.4.1",
+    "tailwindcss": "^3.0.7",
+    "zxcvbn": "^4.4.2"
   },
   "type": "module"
 }

@@ -13,13 +13,14 @@
 			return { props: { thing: data, user: await user.json() } };
 		}
 	};
+
 </script>
 
 <script>
 	export let thing;
 	export let user;
 	import { marked, options } from 'marked';
-	import {onMount} from "svelte"
+	import { onMount } from 'svelte';
 	import sanitizeHtml from 'sanitize-html';
 	import Navbar from '$lib/navbar.svelte';
 	import { DateTime } from 'luxon';
@@ -31,18 +32,18 @@
 	import { loggedin } from '$lib/stores';
 	let selectedCol;
 	let createCol;
-	let url = ""
+	let url = '';
 	onMount(() => (url = window.location.href));
-	console.log($loggedin)
+	console.log($loggedin);
 	const getCollectionsFunc = async () => {
 		const res = await fetch(`${apiurl}/api/v1/collections/my`);
-		if (res.status !== 200) {
+		if (res.status !== 200 && $loggedin === true) {
 			goto('/account/login?ref=', url);
 		}
 		return await res.json();
 	};
 
-	let getCollections = getCollectionsFunc()
+	let getCollections = getCollectionsFunc();
 	const prettyfyDate = (date) => {
 		const dt = DateTime.fromISO(date);
 		let minute;
@@ -59,26 +60,37 @@
 
 	const createNewCollection = async () => {
 		const res = await fetch(`${apiurl}/api/v1/collections/create`, {
-			method: "POST",
-			body: JSON.stringify({name: createCol})
-		})
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			method: 'POST',
+			body: JSON.stringify({ name: createCol })
+		});
 		if (res.status === 401) {
 			goto('/account/login?ref=', url);
 		}
-		console.log("Created new Collection")
-		getCollections = getCollectionsFunc()
-	}
+		console.log('Created new Collection');
+		getCollections = getCollectionsFunc();
+	};
 	const addToCollection = async () => {
-		const res = await fetch(`${apiurl}/api/v1/collections/${selectedCol}/update?thing=${thing._id}`, {
-			method: "PUT",
-		})
+		const res = await fetch(
+			`${apiurl}/api/v1/collections/${selectedCol}/update?thing=${thing._id}`,
+			{
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				method: 'PUT'
+			}
+		);
 		if (res.status === 401) {
 			goto('/account/login?ref=', url);
 		}
+	};
+	loggedin.subscribe((value) => {
+		console.log('val', value);
+	});
+	$: console.log(selectedCol);
 
-	}
-	loggedin.subscribe(value => {console.log("val", value)})
-	$: console.log(selectedCol)
 </script>
 
 <Navbar />
@@ -121,7 +133,7 @@
 						href={`${apiurl}/api/v1/cdn/download/${user.username}/${thing.file}`}>Download</a
 					>
 					<!-- {#if $loggedin} -->
-					{#if true}
+					{#if $loggedin}
 						{#await getCollections}
 							<div class="text-center flex justify-center">
 								<div>
@@ -131,16 +143,25 @@
 						{:then cols}
 							{#if cols.length === 0}
 								<div class="pt-8 col-span-2">
-									<form on:submit|preventDefault={createNewCollection} class="grid grid-cols-2 grid-rows-1 gap-2">
-										<input bind:value={createCol} type="text" placeholder="Whatever you like!" class="input input-bordered" />
+									<form
+										on:submit|preventDefault={createNewCollection}
+										class="grid grid-cols-2 grid-rows-1 gap-2"
+									>
+										<input
+											bind:value={createCol}
+											type="text"
+											placeholder="Whatever you like!"
+											class="input input-bordered"
+										/>
 										<button type="submit" class="btn">Create!</button>
 									</form>
-									
 								</div>
 							{:else}
-							
 								<div class="pt-8 col-span-2">
-									<form on:submit|preventDefault={addToCollection} class="grid grid-cols-2 grid-rows-1 gap-2">
+									<form
+										on:submit|preventDefault={addToCollection}
+										class="grid grid-cols-2 grid-rows-1 gap-2"
+									>
 										<select bind:value={selectedCol} class="">
 											<!-- <option disabled="disabled" selected="selected">Choose</option> -->
 											{#each cols as col}
@@ -149,7 +170,6 @@
 										</select>
 										<button type="submit" class="btn">Add!</button>
 									</form>
-									
 								</div>
 							{/if}
 						{/await}

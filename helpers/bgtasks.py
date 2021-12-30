@@ -41,13 +41,13 @@ async def copy_to_typesense():
         "default_sorting_field": "like_count",
     }
     create_collection_response = client.collections.create(db_schema)
-    print(create_collection_response)
     resume_token = None
     pipeline = [{'$match': {'operationType': '*'}}]
     try:
         async with col("things").watch() as stream:
+            print("Starting stream")
             async for insert_change in stream:
-                print("\n", insert_change)
+                print("\n", insert_change, "\n", insert_change["operationType"])
                 if insert_change['operationType'] == 'delete':
                     client.collections['things'].documents[str(insert_change['documentKey']['_id'])].delete()
                 elif insert_change["operationType"] == "update":
@@ -61,12 +61,13 @@ async def copy_to_typesense():
                     client.collections["things"].documents.upsert(data)
                 resume_token = stream.resume_token
     except pymongo.errors.PyMongoError:
+        print("Error1")
         # The ChangeStream encountered an unrecoverable error or the
         # resume attempt failed to recreate the cursor.
         if resume_token is None:
             # There is no usable resume token because there was a
             # failure during ChangeStream initialization.
-            print('...')
+            print("error!")
         else:
             # Use the interrupted ChangeStream's resume token to
             # create a new ChangeStream. The new stream will
@@ -76,3 +77,43 @@ async def copy_to_typesense():
                     pipeline, resume_after=resume_token) as stream:
                 async for insert_change in stream:
                     print(insert_change)
+
+
+async def migrate_existing():
+    print('Running typesense task')
+    client = typesense.Client({
+        'api_key': settings.typesense_api_key,
+        "nodes": [{
+            "host": settings.typesense_host,
+            "port": settings.typesense_port,
+            "protocol": settings.typesense_protocol
+        }],
+        "connection_timeout_seconds": settings.typesense_timeout
+    })
+    try:
+        client.collections['things'].delete()
+    except Exception as e:
+        pass
+    db_schema = {  # MUST FIT BASETHING IN helpers.models!!!
+        "name": "things",
+        "fields": [
+            {"name": "category", "type": "string"},
+            {"name": "description", "type": "string"},
+            {"name": "title", "type": "string"},
+            {"name": "like_count", "type": "int32"},
+            {"name": "category", "type": "string"},
+
+        ],
+        "default_sorting_field": "like_count",
+    }
+    create_collection_response = client.collections.create(db_schema)
+    resume_token = None
+    pipeline = [{'$match': {'operationType': '*'}}]
+    print("Starting stream")
+    async for document in col("things").find({}):
+        document['id'] = str(document['_id'])
+        del document['_id']
+        data = json.dumps(document, default=json_util.default)
+        print("\n", data)
+        client.collections["things"].documents.upsert(data)
+

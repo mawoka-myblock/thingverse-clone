@@ -15,6 +15,7 @@
 		menuItems = !menuItems;
 	};
 	console.log(user);
+
 </script>
 
 <nav
@@ -24,7 +25,7 @@
 	<section class="w-full lg:w-max flex justify-between">
 		<!-- Logo -->
 		<a href="/" class="font-black tracking-tight text-xl text-black marck-script link-hover"
-			>Thingverse</a
+			>ThingWorld</a
 		>
 
 		<!-- Our open/close buttons -->
@@ -88,34 +89,34 @@
 			>
 		</li>
 		{#if loggedin}
-		<li class="py-2 lg:hidden block">
-			<a
-				class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 link-hover"
-				href="/account/overview">Your account</a
-			>
-		</li>
+			<li class="py-2 lg:hidden block">
+				<a
+					class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 link-hover"
+					href="/account/overview">Your account</a
+				>
+			</li>
 		{:else}
-		<li class="py-2 lg:hidden block">
-			<a
-				class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 link-hover"
-				href="/account/login?ref={url}">Login</a
-			>
-		</li>
+			<li class="py-2 lg:hidden block">
+				<a
+					class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 link-hover"
+					href="/account/login?ref={url}">Login</a
+				>
+			</li>
 		{/if}
 	</ul>
-	{#if loggedin}
-	<div class="py-2 justify-self-end hidden lg:block">
-		<a
-			class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 invisible lg:visible whitespace-nowrap"
-			href="/account/overview">Your account</a
-		>
-	</div>
+	{#if $loggedin}
+		<div class="py-2 justify-self-end hidden lg:block">
+			<a
+				class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 invisible lg:visible whitespace-nowrap"
+				href="/account/overview">Your account</a
+			>
+		</div>
 	{:else}
-	<div class="py-2 justify-self-end hidden lg:block">
-		<a
-			class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 invisible lg:visible"
-			href="/account/login?ref={url}">Login</a
-		>
-	</div>
+		<div class="py-2 justify-self-end hidden lg:block">
+			<a
+				class="text-lg font-medium lg:px-4 text-gray-600 hover:text-green-600 invisible lg:visible"
+				href="/account/login?ref={url}">Login</a
+			>
+		</div>
 	{/if}
 </nav>
