@@ -1,8 +1,7 @@
 # Thingverse-Clone
+Pretty much what you guess it'd be, BUT it's far from finished. If you want to work on it, fork it and make me smile by forking it.
 
-
-To-Do's are on the Vikunja-Board below:
-https://tasks.mawoka.eu.org/share/vorLlamODyqrtoBcxydxMNEjslRQzarIjnPjqHjU/auth
+As far as I know, user-management is done, among the upload and search of models. The main problem is that this is build with MongoDB, which was the worst decision (for this project).
 ## Setup
 ### Requirements
 - Redis
